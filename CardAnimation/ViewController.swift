@@ -38,6 +38,13 @@ class ViewController: UIViewController {
         
         homeView.alpha = 1
         secondView.alpha = 0
+        myView.layer.cornerRadius = 4
+        myView.layer.borderWidth = 0.1
+        homeView.layer.cornerRadius = 4
+        homeView.layer.borderWidth = 0.1
+        secondView.layer.cornerRadius = 4
+        secondView.layer.borderWidth = 0.1
+        
     }
     
     override func didReceiveMemoryWarning() {
@@ -45,12 +52,15 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    func initSecondView(){
+        initButtons()
+        self.secondView.alpha = 1
+        self.secondView.frame = CGRect(x:0, y:0, width:viewWidth, height:viewHeight)
+    }
     
-    //对下方按钮一起设置可见状态
-    func hideButtons(f:Bool){
-        btn1.isHidden = f
-        btn2.isHidden = f
-        btn3.isHidden = f
+    func initHomeView(){
+        self.homeView.alpha = 1
+        self.homeView.frame = CGRect(x:0, y:0, width:viewWidth, height:viewHeight)
     }
     
     //重置下方按钮
@@ -62,7 +72,13 @@ class ViewController: UIViewController {
         self.btn3.frame = CGRect(x:downBtnWidth * 2, y:self.viewHeight-self.downBtnHeight, width:downBtnWidth, height:downBtnHeight)
         self.btn3.backgroundColor = #colorLiteral(red: 0.9372458458, green: 0.9372604489, blue: 0.9567177892, alpha: 0.9)
         hideButtons(f: false)
-        
+    }
+    
+    //对下方按钮一起设置可见状态
+    func hideButtons(f:Bool){
+        btn1.isHidden = f
+        btn2.isHidden = f
+        btn3.isHidden = f
     }
     
     //重置锁
@@ -85,7 +101,7 @@ class ViewController: UIViewController {
     
     //拖动手势
     @ objc func handlePanGesture(sender: UIPanGestureRecognizer){
-
+        
         //得到拖的过程中的xy坐标
         let translation : CGPoint = sender.translation(in: btn)
         let deltaX = abs(translation.x)
@@ -96,19 +112,20 @@ class ViewController: UIViewController {
             checkLock(deltaX: deltaX, deltaY: deltaY)
         } else {
             if isUp {
-                if(translation.y<0){
+                if translation.y<0 {
                     notSureAnimation()
                     self.secondView.transform = CGAffineTransform(translationX: 0, y: translation.y)
                 }
             } else {
-                if(translation.x<0){
+                if translation.x < -3 {
                     secondView.transform = CGAffineTransform(translationX: translation.x, y: getY(x: translation.x))
                     knowAnimation()
-                }else{
+                }else if translation.x > 3 {
                     secondView.transform = CGAffineTransform(translationX: translation.x, y: getY(x: translation.x))
                     dontKnowAnimation()
+                }else{
+                    initButtons()
                 }
-                
             }
         }
         
@@ -139,6 +156,7 @@ class ViewController: UIViewController {
     @IBAction func know() {
         knowAnimation()
         UIView.animate(withDuration: 1, animations:  {
+            self.secondView.frame = CGRect(x:-200, y:Int(self.getY(x: 200)), width:self.viewWidth, height:self.viewHeight)
             self.secondView.alpha = 0
         })
     }
@@ -159,6 +177,7 @@ class ViewController: UIViewController {
     @IBAction func notSure() {
         notSureAnimation()
         UIView.animate(withDuration: 1, animations:  {
+            self.secondView.frame = CGRect(x:0, y:-500, width:self.viewWidth, height:self.viewHeight)
             self.secondView.alpha = 0
         })
     }
@@ -176,8 +195,9 @@ class ViewController: UIViewController {
     
     //按钮“不知道”
     @IBAction func dontKnow() {
-        notSureAnimation()
+        dontKnowAnimation()
         UIView.animate(withDuration: 1, animations:  {
+            self.secondView.frame = CGRect(x:200, y:Int(self.getY(x: 200)), width:self.viewWidth, height:self.viewHeight)
             self.secondView.alpha = 0
         })
     }
@@ -195,13 +215,14 @@ class ViewController: UIViewController {
     
     //主页大按钮点击切换页面
     @IBAction func flip(_ sender: Any) {
-        initButtons()
-        UIView.transition(with: myView, duration: 1, options: .transitionFlipFromRight, animations: {self.homeView.alpha = 0;self.secondView.alpha = 1}, completion: nil)
+        self.initSecondView()
+        UIView.transition(with: myView, duration: 1, options: .transitionFlipFromRight, animations: {self.homeView.alpha = 0}, completion: nil)
     }
     
     //次页大按钮返回主页
     @IBAction func retHome(_ sender: Any) {
-        UIView.transition(with: myView, duration: 1, options: .transitionFlipFromRight, animations: {self.homeView.alpha = 1;self.secondView.alpha = 0}, completion: nil)
+        self.initHomeView()
+        UIView.transition(with: myView, duration: 1, options: .transitionFlipFromRight, animations: {self.secondView.alpha = 0}, completion: nil)
         
     }
     
