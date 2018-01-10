@@ -19,16 +19,23 @@ class ViewController: UIViewController {
     @IBOutlet weak var btn2: UIButton!      //次页面的”不确定“按钮
     @IBOutlet weak var btn3: UIButton!      //次页面的“不知道”按钮
     
-    var isUp = false        //判断是否向上滑动
-    var lock = false        //方向锁
+    var isUp = false                        //判断是否向上滑动
+    var lock = false                        //方向锁
     
-    var viewWidth = 279         //卡片视图的宽度
-    var viewHeight = 500        //卡片视图的高度
-    var viewX = 21              //卡片视图的x坐标
-    var viewY = 40              //卡片视图的y坐标
+    var viewWidth: CGFloat = 279            //卡片视图的宽度
+    var viewHeight: CGFloat = 500           //卡片视图的高度
+    var viewX: CGFloat = 21                 //卡片视图的x坐标
+    var viewY: CGFloat = 40                 //卡片视图的y坐标
     
-    var downBtnWidth:Int = 93    //下方按钮的宽度
-    var downBtnHeight:Int = 60   //下方按钮的高度
+    var downBtnWidth: CGFloat = 93          //下方按钮的宽度
+    var downBtnHeight: CGFloat = 60         //下方按钮的高度
+    
+    var slideTime: Double = 1               //点击按钮卡片滑动时间
+    var slideTime2: Double = 0.5            //拖拽甩出卡片的时间
+    var buttonTime: Double = 0.5            //按钮变大的时间
+    
+    var cornerRadius: CGFloat = 4           //圆角度
+    var borderWidth: CGFloat = 0.1          //边框宽度
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,29 +45,27 @@ class ViewController: UIViewController {
         
         homeView.alpha = 1
         secondView.alpha = 0
-        myView.layer.cornerRadius = 4
-        myView.layer.borderWidth = 0.1
-        homeView.layer.cornerRadius = 4
-        homeView.layer.borderWidth = 0.1
-        secondView.layer.cornerRadius = 4
-        secondView.layer.borderWidth = 0.1
-        
+        myView.layer.cornerRadius = cornerRadius
+        myView.layer.borderWidth = borderWidth
+        homeView.layer.cornerRadius = cornerRadius
+        homeView.layer.borderWidth = borderWidth
+        secondView.layer.cornerRadius = cornerRadius
+        secondView.layer.borderWidth = borderWidth
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
     func initSecondView(){
         initButtons()
         self.secondView.alpha = 1
-        self.secondView.frame = CGRect(x:0, y:0, width:viewWidth, height:viewHeight)
+        self.secondView.transform = CGAffineTransform(translationX: 0, y: 0)
     }
     
     func initHomeView(){
         self.homeView.alpha = 1
-        self.homeView.frame = CGRect(x:0, y:0, width:viewWidth, height:viewHeight)
+        self.homeView.transform = CGAffineTransform(translationX: 0, y: 0)
     }
     
     //重置下方按钮
@@ -71,14 +76,28 @@ class ViewController: UIViewController {
         self.btn2.backgroundColor = #colorLiteral(red: 0.9372458458, green: 0.9372604489, blue: 0.9567177892, alpha: 0.9)
         self.btn3.frame = CGRect(x:downBtnWidth * 2, y:self.viewHeight-self.downBtnHeight, width:downBtnWidth, height:downBtnHeight)
         self.btn3.backgroundColor = #colorLiteral(red: 0.9372458458, green: 0.9372604489, blue: 0.9567177892, alpha: 0.9)
-        hideButtons(f: false)
+        buttonSwitch(flag: "all")
     }
     
-    //对下方按钮一起设置可见状态
-    func hideButtons(f:Bool){
-        btn1.isHidden = f
-        btn2.isHidden = f
-        btn3.isHidden = f
+    //对下方三个按钮设置可见状态
+    func buttonSwitch(flag:String){
+        btn1.isHidden = true
+        btn2.isHidden = true
+        btn3.isHidden = true
+        switch flag {
+        case "btn1":
+            btn1.isHidden = false
+        case "btn2":
+            btn2.isHidden = false
+        case "btn3":
+            btn3.isHidden = false
+        case "all":
+            btn1.isHidden = false
+            btn2.isHidden = false
+            btn3.isHidden = false
+        default:
+            return
+        }
     }
     
     //重置锁
@@ -89,7 +108,7 @@ class ViewController: UIViewController {
     
     //检查锁
     func checkLock(deltaX:CGFloat,deltaY:CGFloat){
-        if deltaX>1 || deltaY > 1{
+        if deltaX > 1 || deltaY > 1{
             lock = true
             if deltaX * 2 < deltaY {
                 isUp = true
@@ -101,45 +120,68 @@ class ViewController: UIViewController {
     
     //拖动手势
     @ objc func handlePanGesture(sender: UIPanGestureRecognizer){
-        
         //得到拖的过程中的xy坐标
         let translation : CGPoint = sender.translation(in: btn)
         let deltaX = abs(translation.x)
         let deltaY = abs(translation.y)
         
-        
         if !lock {
             checkLock(deltaX: deltaX, deltaY: deltaY)
         } else {
             if isUp {
-                if translation.y<0 {
+                if translation.y < -1 {
                     notSureAnimation()
-                    self.secondView.transform = CGAffineTransform(translationX: 0, y: translation.y)
+                    self.secondView.transform = CGAffineTransform(translationX: 0, y: translation.y-1)
                 }
             } else {
-                if translation.x < -3 {
-                    secondView.transform = CGAffineTransform(translationX: translation.x, y: getY(x: translation.x))
+                secondView.transform = CGAffineTransform(translationX: translation.x, y: getY(x: translation.x))
+                if translation.x < -30 {
                     knowAnimation()
-                }else if translation.x > 3 {
-                    secondView.transform = CGAffineTransform(translationX: translation.x, y: getY(x: translation.x))
+                }else if translation.x > 30 {
                     dontKnowAnimation()
                 }else{
-                    initButtons()
+                    UIView.animate(withDuration: 0.3, animations:  {
+                        self.initButtons()
+                    })
                 }
             }
         }
-        
-        
         //放开鼠标 重置状态
         if sender.state == UIGestureRecognizerState.ended{
-            
             //让当前卡片消失
-            if deltaX > 200 || deltaY > 300{
-                secondView.alpha = 0
+            if deltaX > 210 || deltaY > 330{
+                if isUp{
+                    //向上消失动画
+                    UIView.animate(withDuration: slideTime2, animations:  {
+                        self.secondView.transform = CGAffineTransform(translationX: 0, y: -self.viewHeight)
+                    })
+                } else {
+                    if translation.x < 0 {
+                        //向左消失动画
+                        UIView.animate(withDuration: slideTime2, animations:  {
+                            self.secondView.transform = CGAffineTransform(translationX: -self.viewWidth, y: self.getY(x: self.viewWidth))
+                        })
+                    } else {
+                        //向右消失动画
+                        UIView.animate(withDuration: slideTime2, animations:  {
+                            self.secondView.transform = CGAffineTransform(translationX: self.viewWidth, y: self.getY(x: self.viewWidth))
+                        })
+                    }
+                }
+                UIView.animate(withDuration: 1, animations:  {
+                    self.secondView.alpha = 0
+                })
+            }else{
+                //卡片返回原处
+                UIView.animate(withDuration: 0.5, animations:  {
+                    self.secondView.transform = CGAffineTransform(translationX: 0, y: 0)
+                })
+                UIView.animate(withDuration: 0.8, animations:  {
+                    self.initButtons()
+                })
             }
-            secondView.transform = CGAffineTransform(translationX: 0, y: 0)
+            //解锁
             initLock()
-            initButtons()
         }
     }
     
@@ -155,20 +197,22 @@ class ViewController: UIViewController {
     //按钮“知道”
     @IBAction func know() {
         knowAnimation()
-        UIView.animate(withDuration: 1, animations:  {
-            self.secondView.frame = CGRect(x:-200, y:Int(self.getY(x: 200)), width:self.viewWidth, height:self.viewHeight)
+        UIView.animate(withDuration: slideTime, animations:  {
+            self.secondView.transform = CGAffineTransform(translationX: -self.viewWidth, y: self.getY(x: self.viewWidth))
+        })
+        UIView.animate(withDuration: 2, animations:  {
             self.secondView.alpha = 0
         })
     }
     
     func knowAnimation(){
-        btn1.isHidden = false
-        btn2.isHidden = true
-        btn3.isHidden = true
+        buttonSwitch(flag: "btn1")
         
-        UIView.animate(withDuration: 0.5, animations:  {
+        UIView.animate(withDuration: buttonTime, animations:  {
             self.btn1.frame = CGRect(x:0, y:self.viewHeight-self.downBtnHeight, width:self.viewWidth , height:self.downBtnHeight)
             self.btn1.backgroundColor = #colorLiteral(red: 0.2901960784, green: 0.5647058824, blue: 0.8862745098, alpha: 1)
+        })
+        UIView.animate(withDuration: 2, animations:  {
             self.homeView.alpha = 1
         })
     }
@@ -176,39 +220,48 @@ class ViewController: UIViewController {
     //按钮“不确定”
     @IBAction func notSure() {
         notSureAnimation()
-        UIView.animate(withDuration: 1, animations:  {
-            self.secondView.frame = CGRect(x:0, y:-500, width:self.viewWidth, height:self.viewHeight)
+        UIView.animate(withDuration: slideTime, animations:  {
+            self.secondView.transform = CGAffineTransform(translationX: 0, y: -500)
+        })
+        UIView.animate(withDuration: 2, animations:  {
             self.secondView.alpha = 0
         })
+        
     }
     
     func notSureAnimation(){
-        btn1.isHidden = true
-        btn2.isHidden = false
-        btn3.isHidden = true
-        UIView.animate(withDuration: 0.5, animations:  {
+        buttonSwitch(flag: "btn2")
+        
+        UIView.animate(withDuration: buttonTime, animations:  {
             self.btn2.frame = CGRect(x:0, y:self.viewHeight-self.downBtnHeight, width:self.viewWidth , height:self.downBtnHeight)
             self.btn2.backgroundColor = #colorLiteral(red: 1, green: 0.7333333333, blue: 0.3176470588, alpha: 1)
+        })
+        UIView.animate(withDuration: 2, animations:  {
             self.homeView.alpha = 1
         })
     }
     
+ 
+    
     //按钮“不知道”
     @IBAction func dontKnow() {
         dontKnowAnimation()
-        UIView.animate(withDuration: 1, animations:  {
-            self.secondView.frame = CGRect(x:200, y:Int(self.getY(x: 200)), width:self.viewWidth, height:self.viewHeight)
+        UIView.animate(withDuration: slideTime, animations:  {
+             self.secondView.transform = CGAffineTransform(translationX: self.viewWidth, y: self.getY(x: self.viewWidth))
+        })
+        UIView.animate(withDuration: 2, animations:  {
             self.secondView.alpha = 0
         })
     }
     
     func dontKnowAnimation(){
-        btn1.isHidden = true
-        btn2.isHidden = true
-        btn3.isHidden = false
-        UIView.animate(withDuration: 0.5, animations:  {
+        buttonSwitch(flag: "btn3")
+        
+        UIView.animate(withDuration: buttonTime, animations:  {
             self.btn3.frame = CGRect(x:0, y:self.viewHeight-self.downBtnHeight, width:self.viewWidth , height:self.downBtnHeight)
             self.btn3.backgroundColor = #colorLiteral(red: 0.8509803922, green: 0.8745098039, blue: 0.8980392157, alpha: 1)
+        })
+        UIView.animate(withDuration: 2, animations:  {
             self.homeView.alpha = 1
         })
     }
