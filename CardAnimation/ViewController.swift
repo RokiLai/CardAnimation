@@ -22,6 +22,30 @@ class ViewController: UIViewController {
     var isUp = false        //判断是否向上滑动
     var lock = false        //方向锁
     
+    var viewWidth = 279         //卡片视图的宽度
+    var viewHeight = 500        //卡片视图的高度
+    var viewX = 21              //卡片视图的x坐标
+    var viewY = 40              //卡片视图的y坐标
+    
+    var downBtnWidth:Int = 93    //下方按钮的宽度
+    var downBtnHeight:Int = 60   //下方按钮的高度
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(ViewController.handlePanGesture(sender:)))
+        self.view.addGestureRecognizer(panGesture)
+        
+        homeView.alpha = 1
+        secondView.alpha = 0
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+    
+    
     //对下方按钮一起设置可见状态
     func hideButtons(f:Bool){
         btn1.isHidden = f
@@ -31,11 +55,11 @@ class ViewController: UIViewController {
     
     //重置下方按钮
     func initButtons(){
-        self.btn1.frame = CGRect(x:0, y:483, width:100, height:50)
+        self.btn1.frame = CGRect(x:0, y:self.viewHeight-self.downBtnHeight, width:downBtnWidth, height:downBtnHeight)
         self.btn1.backgroundColor = #colorLiteral(red: 0.9372458458, green: 0.9372604489, blue: 0.9567177892, alpha: 0.9)
-        self.btn2.frame = CGRect(x:100, y:483, width:100, height:50)
+        self.btn2.frame = CGRect(x:downBtnWidth, y:self.viewHeight-self.downBtnHeight, width:downBtnWidth, height:downBtnHeight)
         self.btn2.backgroundColor = #colorLiteral(red: 0.9372458458, green: 0.9372604489, blue: 0.9567177892, alpha: 0.9)
-        self.btn3.frame = CGRect(x:200, y:483, width:100, height:50)
+        self.btn3.frame = CGRect(x:downBtnWidth * 2, y:self.viewHeight-self.downBtnHeight, width:downBtnWidth, height:downBtnHeight)
         self.btn3.backgroundColor = #colorLiteral(red: 0.9372458458, green: 0.9372604489, blue: 0.9567177892, alpha: 0.9)
         hideButtons(f: false)
         
@@ -78,11 +102,11 @@ class ViewController: UIViewController {
                 }
             } else {
                 if(translation.x<0){
+                    secondView.transform = CGAffineTransform(translationX: translation.x, y: getY(x: translation.x))
                     knowAnimation()
-                    secondView.transform = CGAffineTransform(translationX: translation.x, y: getY(x: translation.x))
                 }else{
-                    dontKnowAnimation()
                     secondView.transform = CGAffineTransform(translationX: translation.x, y: getY(x: translation.x))
+                    dontKnowAnimation()
                 }
                 
             }
@@ -107,7 +131,7 @@ class ViewController: UIViewController {
         let width = secondView.bounds.width
         let temp : Double = Double(width)
         let tempx : Double = Double(x)
-        return CGFloat(sqrt(pow(7.21 * temp, 2) - tempx * tempx) - 7.12 * temp) - 27
+        return CGFloat(sqrt(pow(7.21 * temp, 2) - tempx * tempx) - 7.12 * temp) - 28
         
     }
     
@@ -120,11 +144,12 @@ class ViewController: UIViewController {
     }
     
     func knowAnimation(){
+        btn1.isHidden = false
         btn2.isHidden = true
         btn3.isHidden = true
         
         UIView.animate(withDuration: 0.5, animations:  {
-            self.btn1.frame = CGRect(x:0, y:483, width:300, height:50)
+            self.btn1.frame = CGRect(x:0, y:self.viewHeight-self.downBtnHeight, width:self.viewWidth , height:self.downBtnHeight)
             self.btn1.backgroundColor = #colorLiteral(red: 0.2901960784, green: 0.5647058824, blue: 0.8862745098, alpha: 1)
             self.homeView.alpha = 1
         })
@@ -140,9 +165,10 @@ class ViewController: UIViewController {
     
     func notSureAnimation(){
         btn1.isHidden = true
+        btn2.isHidden = false
         btn3.isHidden = true
         UIView.animate(withDuration: 0.5, animations:  {
-            self.btn2.frame = CGRect(x:0, y:483, width:300, height:50)
+            self.btn2.frame = CGRect(x:0, y:self.viewHeight-self.downBtnHeight, width:self.viewWidth , height:self.downBtnHeight)
             self.btn2.backgroundColor = #colorLiteral(red: 1, green: 0.7333333333, blue: 0.3176470588, alpha: 1)
             self.homeView.alpha = 1
         })
@@ -159,8 +185,9 @@ class ViewController: UIViewController {
     func dontKnowAnimation(){
         btn1.isHidden = true
         btn2.isHidden = true
+        btn3.isHidden = false
         UIView.animate(withDuration: 0.5, animations:  {
-            self.btn3.frame = CGRect(x:0, y:483, width:300, height:50)
+            self.btn3.frame = CGRect(x:0, y:self.viewHeight-self.downBtnHeight, width:self.viewWidth , height:self.downBtnHeight)
             self.btn3.backgroundColor = #colorLiteral(red: 0.8509803922, green: 0.8745098039, blue: 0.8980392157, alpha: 1)
             self.homeView.alpha = 1
         })
@@ -178,19 +205,5 @@ class ViewController: UIViewController {
         
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(ViewController.handlePanGesture(sender:)))
-        self.view.addGestureRecognizer(panGesture)
-        
-        homeView.alpha = 1
-        secondView.alpha = 0
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
     
 }
