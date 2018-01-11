@@ -258,7 +258,7 @@ class ViewController: UIViewController {
         let width = secondView.bounds.width
         let temp : Double = Double(width)
         let tempx : Double = Double(x)
-        return CGFloat(sqrt(pow(7.21 * temp, 2) - tempx * tempx) - 7.12 * temp) - 26
+        return CGFloat(sqrt(pow(7.21 * temp, 2) - tempx * tempx) - 7.12 * temp) - 30
         
     }
     
