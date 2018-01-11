@@ -34,11 +34,11 @@ class ViewController: UIViewController {
     var viewY: CGFloat = 59                             //卡片视图的y坐标
     var viewColor: UIColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)                         //卡片视图的背景色
     
-    var downBtnWidth: CGFloat = 112                      //下方按钮的宽度
+    var downBtnWidth: CGFloat = 112                     //下方按钮的宽度
     var downBtnHeight: CGFloat = 72                     //下方按钮的高度
     var downBtnFrontColor: UIColor = #colorLiteral(red: 0.6862745098, green: 0.6784313725, blue: 0.6784313725, alpha: 1)                 //下方按钮文字颜色
     var downBtnFrontSize: CGFloat = 16                  //下方按钮文字尺寸
-    var downBtnColor: UIColor = #colorLiteral(red: 0.9372458458, green: 0.9372604489, blue: 0.9567177892, alpha: 0.9)                      //下方按钮的背景色
+    var downBtnColor: UIColor = #colorLiteral(red: 0.9630343318, green: 0.9728212953, blue: 0.9811994433, alpha: 1)                      //下方按钮的背景色
     var reBtnWidth: CGFloat = 30                        //下方按钮还原判定的宽度
     var reBtnHeight: CGFloat =  30                      //下方按钮还原判定的高度
     
@@ -108,6 +108,7 @@ class ViewController: UIViewController {
     
     func initBtn1(){
         btn1.frame = CGRect(x:0, y:self.viewHeight-self.downBtnHeight, width:downBtnWidth, height:downBtnHeight)
+        btn1.layer.borderWidth = borderWidth
         btn1.layer.borderColor = borderColor
         btn1.backgroundColor = downBtnColor
         btn1.titleLabel?.font = UIFont.systemFont(ofSize: downBtnFrontSize)
@@ -118,6 +119,8 @@ class ViewController: UIViewController {
     
     func initBtn2(){
         btn2.frame = CGRect(x:downBtnWidth, y:self.viewHeight-self.downBtnHeight, width:downBtnWidth, height:downBtnHeight)
+        btn2.layer.borderWidth = borderWidth
+        btn2.layer.borderWidth = borderWidth
         btn2.layer.borderColor = borderColor
         btn2.backgroundColor = downBtnColor
         btn2.titleLabel?.font = UIFont.systemFont(ofSize: downBtnFrontSize)
@@ -329,8 +332,6 @@ class ViewController: UIViewController {
     @IBAction func retHome(_ sender: Any) {
         initHomeView()
         UIView.transition(with: myView, duration: flipTime, options: .transitionFlipFromRight, animations: {self.hideSecondView()}, completion: nil)
-        
     }
-    
     
 }
