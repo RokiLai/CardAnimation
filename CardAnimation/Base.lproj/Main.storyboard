@@ -29,7 +29,10 @@
                                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="awi-b3-ONa">
                                                 <rect key="frame" x="0.0" y="0.0" width="279" height="500"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                <state key="normal" image="00"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
+                                                <state key="normal" title="汤姆米切尔提出的机器学习的定义">
+                                                    <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                </state>
                                                 <connections>
                                                     <action selector="flip:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Mms-9f-NdN"/>
                                                 </connections>
@@ -44,7 +47,9 @@
                                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bfL-M4-bsx">
                                                 <rect key="frame" x="0.0" y="0.0" width="279" height="500"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                <state key="normal" image="01"/>
+                                                <state key="normal" title="汤姆米切尔提出的机器学习的定义">
+                                                    <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                </state>
                                                 <connections>
                                                     <action selector="retHome:" destination="BYZ-38-t0r" eventType="touchUpInside" id="dw6-Zy-IpY"/>
                                                 </connections>
@@ -102,8 +107,4 @@
             <point key="canvasLocation" x="24.375" y="29.577464788732396"/>
         </scene>
     </scenes>
-    <resources>
-        <image name="00" width="300" height="533"/>
-        <image name="01" width="300" height="533"/>
-    </resources>
 </document>

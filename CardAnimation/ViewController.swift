@@ -35,7 +35,7 @@ class ViewController: UIViewController {
     var buttonTime: Double = 0.5            //按钮变大的时间
     
     var cornerRadius: CGFloat = 4           //圆角度
-    var borderWidth: CGFloat = 0.1          //边框宽度
+    var borderWidth: CGFloat = 0          //边框宽度
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,6 +51,7 @@ class ViewController: UIViewController {
         homeView.layer.borderWidth = borderWidth
         secondView.layer.cornerRadius = cornerRadius
         secondView.layer.borderWidth = borderWidth
+        homeBtn.titleLabel?.lineBreakMode = .byWordWrapping
     }
     
     override func didReceiveMemoryWarning() {
