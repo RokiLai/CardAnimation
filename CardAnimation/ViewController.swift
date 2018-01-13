@@ -1,173 +1,81 @@
 //
 //  ViewController.swift
-//  Demo
+//  CardAnimation2
 //
-//  Created by Roki on 2018/1/8.
-//  Copyright © 2018年 Xindong. All rights reserved.
+//  Created by Roki on 2018/1/13.
+//  Copyright © 2018年 xindong. All rights reserved.
 //
 
 import UIKit
 
 class ViewController: UIViewController {
     
-    @IBOutlet var myView: UIView!                       //容器页面 包含两个页面
-    @IBOutlet weak var secondView: UIView!              //次页面
-    @IBOutlet weak var homeView: UIView!                //主页面
-    @IBOutlet weak var homeBtn: UIButton!               //主页面的大按钮
-    @IBOutlet weak var btn: UIButton!                   //次页面的大按钮
-    @IBOutlet weak var btn1: UIButton!                  //次页面的“知道”按钮
-    @IBOutlet weak var btn2: UIButton!                  //次页面的”不确定“按钮
-    @IBOutlet weak var btn3: UIButton!                  //次页面的“不知道”按钮
+    
+    var homeCard = Card()
+    var secondCard = Card()
+    var homeBtn: UIButton = UIButton()
+    var secondBtn: UIButton = UIButton()
+    var knowBtn: Button = Button()
+    var dontKnowBtn: Button = Button()
+    var notSureBtn: Button = Button()
+    
+    var homeTitle: String = "汤姆米切尔提出的机器学习的定义"
+    var secondTitle: String = "汤姆米切尔提出的机器学习的定义..."
+    var buttonTime: Double = 0.2                        //按钮变大的时间
+    var reBtnTime: Double = 0.3                         //还原三个按钮的时间
+    var reBtnWidth: CGFloat = 30                        //下方按钮还原判定的宽度
+    var reBtnHeight: CGFloat =  30                      //下方按钮还原判定的高度
+    var slideWidth: CGFloat = 220                       //判定左右划出的宽度
+    var slideHeight: CGFloat = 300                      //判定向上划出的高度
+    var slideTime: Double = 0.6                         //点击按钮卡片滑动时间
+    var slideTime2: Double = 0.2                        //拖拽甩出卡片的时间
+    var reCardTime: Double = 0.3                        //卡片返回原处的时间
     
     var isUp = false                                    //判断是否向上滑动
     var lock = false                                    //方向锁
     
-    var screenWidth = UIScreen.main.bounds.width        //屏幕宽度
-    var screenHeight = UIScreen.main.bounds.height      //屏幕高度
-    
-    var flipTime: Double = 0.2                          //翻转页面的时间
-    var screenColor: UIColor = #colorLiteral(red: 0.9723983407, green: 0.9726732373, blue: 0.9681202769, alpha: 1)
-    
-    var viewWidth: CGFloat = 336                        //卡片视图的宽度
-    var viewHeight: CGFloat = 578                       //卡片视图的高度
-    var viewX: CGFloat = 20                             //卡片视图的x坐标
-    var viewY: CGFloat = 59                             //卡片视图的y坐标
-    var viewColor: UIColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)                         //卡片视图的背景色
-    
-    var downBtnWidth: CGFloat = 112                     //下方按钮的宽度
-    var downBtnHeight: CGFloat = 72                     //下方按钮的高度
-    var downBtnFrontColor: UIColor = #colorLiteral(red: 0.6862745098, green: 0.6784313725, blue: 0.6784313725, alpha: 1)                 //下方按钮文字颜色
-    var downBtnFrontSize: CGFloat = 16                  //下方按钮文字尺寸
-    var downBtnColor: UIColor = #colorLiteral(red: 0.9630343318, green: 0.9728212953, blue: 0.9811994433, alpha: 1)                      //下方按钮的背景色
-    var reBtnWidth: CGFloat = 30                        //下方按钮还原判定的宽度
-    var reBtnHeight: CGFloat =  30                      //下方按钮还原判定的高度
-    
-    var slideTime: Double = 0.6                         //点击按钮卡片滑动时间
-    var slideTime2: Double = 0.2                        //拖拽甩出卡片的时间
-    var buttonTime: Double = 0.2                        //按钮变大的时间
-    var buttonBigFrontSize: CGFloat = 20                //按钮变大时文字尺寸
-    var reBtnTime: Double = 0.3                         //还原三个按钮的时间
-    var reCardTime: Double = 0.3                        //卡片返回原处的时间
-    var slideWidth: CGFloat = 220                       //判定左右划出的宽度
-    var slideHeight: CGFloat = 300                      //判定向上划出的高度
-    
-    var cornerRadius: CGFloat = 4                       //圆角度
-    var borderWidth: CGFloat = 0.5                      //边框宽度
-    var borderColor: CGColor = #colorLiteral(red: 0.8784313725, green: 0.8980392157, blue: 0.9294117647, alpha: 1)                       //边框颜色
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = #colorLiteral(red: 0.9568627451, green: 0.9607843137, blue: 0.9647058824, alpha: 1)
+        view.addSubview(secondCard)
+        view.addSubview(homeCard)
+        
+        initHomeCard()
+        homeCard.addSubview(homeBtn)
+        
+        initSecondCard()
+        secondCard.addSubview(secondBtn)
+        secondCard.addSubview(knowBtn)
+        secondCard.addSubview(notSureBtn)
+        secondCard.addSubview(dontKnowBtn)
+        
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(ViewController.handlePanGesture(sender:)))
-        self.view.addGestureRecognizer(panGesture)
+        secondCard.addGestureRecognizer(panGesture)
         
-        initMyView()
-        initHomeView()
-        hideSecondView()
-        homeBtn.titleLabel?.lineBreakMode = .byWordWrapping
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
-    
-    func initMyView(){
-        myView.layer.cornerRadius = cornerRadius
-        myView.backgroundColor = viewColor
-    }
-    
-    func initHomeView(){
-        homeView.layer.cornerRadius = cornerRadius
-        homeView.layer.borderWidth = borderWidth
-        homeView.layer.borderColor = borderColor
-        homeView.backgroundColor = viewColor
-        homeView.alpha = 1
-        homeView.transform = CGAffineTransform(translationX: 0, y: 0)
-    }
-    
-    func hideHomeView(){
-        homeView.alpha = 0
-    }
-    
-    func initSecondView(){
-        initBtn1()
-        initBtn2()
-        initBtn3()
-        secondView.backgroundColor = viewColor
-        secondView.layer.cornerRadius = cornerRadius
-        secondView.layer.borderWidth = borderWidth
-        secondView.layer.borderColor = borderColor
-        secondView.alpha = 1
-//        secondView.frame = CGRect(x:0, y:0, width:viewWidth, height:viewHeight)
-        secondView.transform = CGAffineTransform(translationX: 0, y: 0)
-    }
-    
-    @objc func hideSecondView(){
-        secondView.alpha = 0
-    }
-    
-    func initBtn1(){
-        btn1.frame = CGRect(x:0, y:self.viewHeight-self.downBtnHeight, width:downBtnWidth, height:downBtnHeight)
-        btn1.layer.borderWidth = borderWidth
-        btn1.layer.borderColor = borderColor
-        btn1.backgroundColor = downBtnColor
-        btn1.titleLabel?.font = UIFont.systemFont(ofSize: downBtnFrontSize)
-        btn1.setTitleColor(downBtnFrontColor, for: .normal)
-        btn1.isHidden = false
+        knowBtn.addTarget(self, action: #selector(self.knowAction), for: .touchUpInside)
+        notSureBtn.addTarget(self, action: #selector(self.notSureAction), for: .touchUpInside)
+        dontKnowBtn.addTarget(self, action: #selector(self.dontKnowAction), for: .touchUpInside)
+        
         
     }
     
-    func initBtn2(){
-        btn2.frame = CGRect(x:downBtnWidth, y:self.viewHeight-self.downBtnHeight, width:downBtnWidth, height:downBtnHeight)
-        btn2.layer.borderWidth = borderWidth
-        btn2.layer.borderWidth = borderWidth
-        btn2.layer.borderColor = borderColor
-        btn2.backgroundColor = downBtnColor
-        btn2.titleLabel?.font = UIFont.systemFont(ofSize: downBtnFrontSize)
-        btn2.setTitleColor(downBtnFrontColor, for: .normal)
-        btn2.isHidden = false
+    //初始化主页卡片的内容
+    func initHomeCard(){
+        initHomeBtn()
     }
     
-    func initBtn3(){
-        btn3.frame = CGRect(x:downBtnWidth * 2, y:self.viewHeight-self.downBtnHeight, width:downBtnWidth, height:downBtnHeight)
-        btn3.titleLabel?.font = UIFont.systemFont(ofSize: downBtnFrontSize)
-        btn3.layer.borderColor = borderColor
-        btn3.backgroundColor = downBtnColor
-        btn3.setTitleColor(downBtnFrontColor, for: .normal)
-        btn3.isHidden = false
+    //初始化次页卡片的内容
+    func initSecondCard(){
+        initSecondBtn()
+        initDownBtns()
     }
     
-    func initBtns(){
-        initBtn1()
-        initBtn2()
-        initBtn3()
-    }
-    
-    //重置锁
-    func initLock(){
-        lock = false
-        isUp = false
-    }
-    
-    //对下方三个按钮设置可见状态
-    func buttonSwitch(flag:String){
-        btn1.isHidden = true
-        btn2.isHidden = true
-        btn3.isHidden = true
-        switch flag {
-        case "btn1":
-            btn1.isHidden = false
-        case "btn2":
-            btn2.isHidden = false
-        case "btn3":
-            btn3.isHidden = false
-        case "all":
-            btn1.isHidden = false
-            btn2.isHidden = false
-            btn3.isHidden = false
-        default:
-            return
-        }
+    //初始化下面三个按钮
+    func initDownBtns(){
+        initKnowBtn()
+        initNotsureBtn()
+        initDontKnowBtn()
     }
     
     //检查锁
@@ -185,7 +93,7 @@ class ViewController: UIViewController {
     //拖动手势
     @ objc func handlePanGesture(sender: UIPanGestureRecognizer){
         //得到拖的过程中的xy坐标
-        let translation : CGPoint = sender.translation(in: btn)
+        let translation : CGPoint = sender.translation(in: secondCard)
         let deltaX = abs(translation.x)
         let deltaY = abs(translation.y)
         
@@ -194,24 +102,24 @@ class ViewController: UIViewController {
         } else {
             if isUp {
                 if translation.y < 10 {
-                    self.secondView.transform = CGAffineTransform(translationX: 0, y: translation.y)
+                    self.secondCard.transform = CGAffineTransform(translationX: 0, y: translation.y)
                     if translation.y < -reBtnHeight {
                         notSureAnimation()
                     } else {
                         UIView.animate(withDuration: reBtnTime, animations:  {
-                            self.initBtns()
+                            self.initDownBtns()
                         })
                     }
                 }
             } else {
-                secondView.transform = CGAffineTransform(translationX: translation.x, y: getY(x: translation.x))
+                secondCard.transform = CGAffineTransform(translationX: translation.x, y: getY(x: translation.x))
                 if translation.x < -reBtnWidth {
                     knowAnimation()
                 }else if translation.x > reBtnWidth {
                     dontKnowAnimation()
                 }else{
                     UIView.animate(withDuration: reBtnTime, animations:  {
-                        self.initBtns()
+                        self.initDownBtns()
                     })
                 }
             }
@@ -223,29 +131,28 @@ class ViewController: UIViewController {
                 if isUp{
                     //向上消失动画
                     UIView.animate(withDuration: slideTime2, animations:  {
-                        self.secondView.transform = CGAffineTransform(translationX: 0, y: -self.screenHeight)
+                        self.secondCard.transform = CGAffineTransform(translationX: 0, y: -self.view.bounds.height)
                     })
                 } else {
                     if translation.x < 0 {
                         //向左消失动画
                         UIView.animate(withDuration: slideTime2, animations:  {
-                            self.secondView.transform = CGAffineTransform(translationX: -self.viewWidth, y: self.getY(x: self.viewWidth))
+                            self.secondCard.transform = CGAffineTransform(translationX: -self.view.bounds.width, y: self.getY(x: self.view.bounds.width))
                         })
                     } else {
                         //向右消失动画
                         UIView.animate(withDuration: slideTime2, animations:  {
-                            self.secondView.transform = CGAffineTransform(translationX: self.viewWidth, y: self.getY(x: self.viewWidth))
+                            self.secondCard.transform = CGAffineTransform(translationX: self.view.bounds.width, y: self.getY(x: self.view.bounds.width))
                         })
                     }
                 }
-                Timer.scheduledTimer(timeInterval: slideTime2, target: self, selector: #selector(self.hideSecondView), userInfo: nil, repeats: false)
             }else{
                 //卡片返回原处
                 UIView.animate(withDuration: reCardTime, animations:  {
-                    self.secondView.transform = CGAffineTransform(translationX: 0, y: 0)
+                    self.secondCard.transform = CGAffineTransform(translationX: 0, y: 0)
                 })
                 UIView.animate(withDuration: reBtnTime, animations:  {
-                    self.initBtns()
+                    self.initDownBtns()
                 })
             }
             //解锁
@@ -253,85 +160,179 @@ class ViewController: UIViewController {
         }
     }
     
+    //重置锁
+    func initLock(){
+        lock = false
+        isUp = false
+    }
+    
     //旋转角度计算 根据横坐标得到纵坐标
     func getY(x:CGFloat) -> CGFloat{
-        let width = secondView.bounds.width
+        let width = secondCard.bounds.width
         let temp : Double = Double(width)
         let tempx : Double = Double(x)
-        return CGFloat(sqrt(pow(7.21 * temp, 2) - tempx * tempx) - 7.12 * temp) - 30
+        return CGFloat(sqrt(pow(7.21 * temp, 2) - tempx * tempx) - 7.12 * temp) - Card.M
         
     }
     
-    //按钮“知道”
-    @IBAction func know() {
+    //初始化主页按钮
+    func initHomeBtn() {
+        homeBtn.frame = CGRect(x: 0, y: 0, width: homeCard.bounds.width, height:homeCard.bounds.height)
+        homeBtn.layer.cornerRadius = 4
+        homeBtn.setTitle(homeTitle, for: .normal)
+        homeBtn.titleLabel?.font = UIFont.systemFont(ofSize: 28)
+        homeBtn.setTitleColor(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 1), for: .normal)
+        homeBtn.backgroundColor = homeBtn.backgroundColor
+        homeBtn.addTarget(self, action: #selector(flipHomeCardBtnAnimation), for: .touchUpInside)
+        homeBtn.titleLabel?.lineBreakMode = .byWordWrapping
+    }
+    
+    //初始化次页大按钮
+    func initSecondBtn() {
+        secondBtn.frame = CGRect(x: 0, y: 0, width: secondCard.bounds.width, height:secondCard.bounds.height)
+        secondBtn.layer.cornerRadius = 4
+        secondBtn.setTitle(secondTitle, for: .normal)
+        secondBtn.setTitleColor(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 1), for: .normal)
+        secondBtn.backgroundColor = homeBtn.backgroundColor
+        secondBtn.addTarget(self, action: #selector(flipSecondCardBtnAnimation), for: .touchUpInside)
+    }
+    
+    //初始化“知道”按钮
+    func initKnowBtn(){
+        knowBtn.frame = CGRect(x: 0, y: secondCard.bounds.height - Button.height, width: secondCard.bounds.width / 3, height: Button.height)
+        knowBtn.setTitle("知道", for: .normal)
+        knowBtn.reset()
+    }
+    
+    //初始化“不确定”按钮
+    func initNotsureBtn(){
+        notSureBtn.frame = CGRect(x: secondCard.bounds.width / 3, y: secondCard.bounds.height - Button.height, width: secondCard.bounds.width / 3, height: Button.height)
+        notSureBtn.setTitle("不确定", for: .normal)
+        notSureBtn.reset()
+    }
+    
+    //初始化“不知道”按钮
+    func initDontKnowBtn(){
+        dontKnowBtn.frame = CGRect(x: secondCard.bounds.width / 3 * 2, y: secondCard.bounds.height - Button.height, width: secondCard.bounds.width / 3, height: Button.height)
+        dontKnowBtn.setTitle("不知道", for: .normal)
+        dontKnowBtn.reset()
+    }
+    
+    
+    //点击主页按钮进行翻转页面
+    @objc func flipHomeCardBtnAnimation() {
+        initSecondCard()
+        flipSecondCard90()
+        UIView.animate(withDuration: 0.1, animations: {self.flipHomeCard90()})
+        Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(self.flipSecondCardReturn), userInfo: nil, repeats: false)
+        //        Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(self.flipSecondCardReturn), userInfo: nil, repeats: false)
+    }
+    
+    //点击次页大按钮进行翻转页面
+    @objc func flipSecondCardBtnAnimation() {
+        initHomeCard()
+        flipHomeCard90()
+        UIView.animate(withDuration: 0.1, animations: {self.flipSecondCard90()})
+        Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(self.flipHomeCardReturn), userInfo: nil, repeats: false)
+    }
+    
+    //主页转90°
+    @objc func flipHomeCard90(){
+        homeCard.layer.transform = CATransform3DMakeRotation(CGFloat(.pi / 2.0), 0, -1, 0)
+    }
+    
+    //主页转回0°
+    @objc func flipHomeCard0(){
+        homeCard.layer.transform = CATransform3DMakeRotation(0, 0, 0, 0)
+    }
+    
+    //转回主页
+    @objc func flipHomeCardReturn(){
+        view.bringSubview(toFront: homeCard)
+        UIView.animate(withDuration: 0.3, animations: {self.homeCard.layer.transform = CATransform3DMakeRotation(0, 0, 0, 0)})
+        Timer.scheduledTimer(timeInterval: 0.3, target: self, selector: #selector(self.flipHomeCard0), userInfo: nil, repeats: false)
+    }
+    
+    //次页转90°
+    @objc func flipSecondCard90(){
+        secondCard.layer.transform = CATransform3DMakeRotation(CGFloat(.pi / 2.0), 0, -1, 0)
+    }
+    
+    //次页转回0°
+    @objc func flipSecondCard0(){
+        secondCard.layer.transform = CATransform3DMakeRotation(0, 0, 0, 0)
+    }
+    
+    //转回次页
+    @objc func flipSecondCardReturn(){
+        view.bringSubview(toFront: secondCard)
+        UIView.animate(withDuration: 0.3, animations: {self.secondCard.layer.transform = CATransform3DMakeRotation(0, 0, 0, 0)})
+        Timer.scheduledTimer(timeInterval: 0.3, target: self, selector: #selector(self.flipHomeCard0), userInfo: nil, repeats: false)
+    }
+    
+    //“知道”按钮点击动作
+    @objc func knowAction(){
         knowAnimation()
         UIView.animate(withDuration: slideTime, animations:  {
-            self.secondView.transform = CGAffineTransform(translationX: -self.screenWidth, y: self.getY(x: self.screenWidth))
+            self.secondCard.transform =  CGAffineTransform(translationX: -self.view.bounds.width, y: self.getY(x: self.view.bounds.width))
         })
-        Timer.scheduledTimer(timeInterval: slideTime, target: self, selector: #selector(self.hideSecondView), userInfo: nil, repeats: false)
     }
     
-    func knowAnimation(){
-        buttonSwitch(flag: "btn1")
-        UIView.animate(withDuration: buttonTime, animations:  {
-            self.btn1.frame = CGRect(x:0, y:self.viewHeight-self.downBtnHeight, width:self.viewWidth , height:self.downBtnHeight)
-            self.btn1.backgroundColor = #colorLiteral(red: 0.2901960784, green: 0.5647058824, blue: 0.8862745098, alpha: 1)
-            self.btn1.setTitleColor(#colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0), for: .normal)
-            self.btn1.titleLabel?.font = UIFont.systemFont(ofSize: self.buttonBigFrontSize)
-        })
-        self.homeView.alpha = 1
-    }
-    
-    //按钮“不确定”
-    @IBAction func notSure() {
+    //“不确定”按钮点击动作
+    @objc func notSureAction(){
         notSureAnimation()
         UIView.animate(withDuration: slideTime, animations:  {
-            self.secondView.transform = CGAffineTransform(translationX: 0, y: -self.screenHeight)
+            self.secondCard.transform = CGAffineTransform(translationX: 0, y: -self.view.bounds.height)
         })
-        Timer.scheduledTimer(timeInterval: slideTime, target: self, selector: #selector(self.hideSecondView), userInfo: nil, repeats: false)
+        
     }
     
-    func notSureAnimation(){
-        buttonSwitch(flag: "btn2")
-        UIView.animate(withDuration: buttonTime, animations:  {
-            self.btn2.frame = CGRect(x:0, y:self.viewHeight-self.downBtnHeight, width:self.viewWidth , height:self.downBtnHeight)
-            self.btn2.backgroundColor = #colorLiteral(red: 1, green: 0.7333333333, blue: 0.3176470588, alpha: 1)
-            self.btn2.setTitleColor(#colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0), for: .normal)
-            self.btn2.titleLabel?.font = UIFont.systemFont(ofSize: self.buttonBigFrontSize)
-        })
-        self.homeView.alpha = 1
-    }
-    
-    //按钮“不知道”
-    @IBAction func dontKnow() {
+    //“不知道”按钮点击动作
+    @objc func dontKnowAction(){
         dontKnowAnimation()
         UIView.animate(withDuration: slideTime, animations:  {
-            self.secondView.transform = CGAffineTransform(translationX: self.screenWidth, y: self.getY(x: self.screenWidth))
+            self.secondCard.transform = CGAffineTransform(translationX: self.view.bounds.width, y: self.getY(x: self.view.bounds.width))
         })
-        Timer.scheduledTimer(timeInterval: slideTime, target: self, selector: #selector(self.hideSecondView), userInfo: nil, repeats: false)
     }
     
-    func dontKnowAnimation(){
-        buttonSwitch(flag: "btn3")
+    //左滑动画（知道）
+    func knowAnimation(){
+        secondCard.bringSubview(toFront: knowBtn)
         UIView.animate(withDuration: buttonTime, animations:  {
-            self.btn3.frame = CGRect(x:0, y:self.viewHeight-self.downBtnHeight, width:self.viewWidth , height:self.downBtnHeight)
-            self.btn3.backgroundColor = #colorLiteral(red: 0.8509803922, green: 0.8745098039, blue: 0.8980392157, alpha: 1)
-            self.btn3.setTitleColor(#colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0), for: .normal)
-            self.btn3.titleLabel?.font = UIFont.systemFont(ofSize: self.buttonBigFrontSize)
+            self.knowBtn.frame = CGRect(x:0, y:self.secondCard.bounds.height-Button.height, width:self.secondCard.bounds.width , height:Button.height)
+            self.knowBtn.backgroundColor = #colorLiteral(red: 0.2901960784, green: 0.5647058824, blue: 0.8862745098, alpha: 1)
+            self.knowBtn.setTitleColor(#colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0), for: .normal)
+            self.knowBtn.titleLabel?.font = UIFont.systemFont(ofSize: Button.bigFrontSize)
         })
-        self.homeView.alpha = 1
     }
     
-    //主页大按钮点击切换页面
-    @IBAction func flip(_ sender: Any) {
-        initSecondView()
-        UIView.transition(with: myView, duration: flipTime, options: .transitionFlipFromRight, animations: {self.hideHomeView()}, completion: nil)
+    //上滑动画（不确定）
+    func notSureAnimation(){
+        secondCard.bringSubview(toFront: notSureBtn)
+        UIView.animate(withDuration: buttonTime, animations:  {
+            self.notSureBtn.frame = CGRect(x:0, y:self.secondCard.bounds.height-Button.height, width:self.secondCard.bounds.width , height:Button.height)
+            self.notSureBtn.backgroundColor = #colorLiteral(red: 1, green: 0.7333333333, blue: 0.3176470588, alpha: 1)
+            self.notSureBtn.setTitleColor(#colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0), for: .normal)
+            self.notSureBtn.titleLabel?.font = UIFont.systemFont(ofSize: Button.bigFrontSize)
+        })
     }
     
-    //次页大按钮返回主页
-    @IBAction func retHome(_ sender: Any) {
-        initHomeView()
-        UIView.transition(with: myView, duration: flipTime, options: .transitionFlipFromRight, animations: {self.hideSecondView()}, completion: nil)
+    //右滑动画（不知道）
+    func dontKnowAnimation(){
+        secondCard.bringSubview(toFront: dontKnowBtn)
+        UIView.animate(withDuration: buttonTime, animations:  {
+            self.dontKnowBtn.frame = CGRect(x:0, y:self.secondCard.bounds.height-Button.height, width:self.secondCard.bounds.width , height:Button.height)
+            self.dontKnowBtn.backgroundColor = #colorLiteral(red: 0.8509803922, green: 0.8745098039, blue: 0.8980392157, alpha: 1)
+            self.dontKnowBtn.setTitleColor(#colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0), for: .normal)
+            self.dontKnowBtn.titleLabel?.font = UIFont.systemFont(ofSize: Button.bigFrontSize)
+        })
     }
+    
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+    }
+    
     
 }
+

@@ -1,9 +1,9 @@
 //
 //  AppDelegate.swift
-//  CardAnimation
+//  CardAnimation2
 //
-//  Created by Roki on 2018/1/10.
-//  Copyright © 2018年 Xindong. All rights reserved.
+//  Created by Roki on 2018/1/13.
+//  Copyright © 2018年 xindong. All rights reserved.
 //
 
 import UIKit
