@@ -311,7 +311,7 @@ class ViewController: UIViewController {
         secondCard.bringSubview(toFront: notSureBtn)
         UIView.animate(withDuration: buttonTime, animations:  {
             self.notSureBtn.frame = CGRect(x:0, y:self.secondCard.bounds.height-Button.height, width:self.secondCard.bounds.width , height:Button.height)
-            self.notSureBtn.backgroundColor = #colorLiteral(red: 1, green: 0.7333333333, blue: 0.3176470588, alpha: 1)
+            self.notSureBtn.backgroundColor = #colorLiteral(red: 1, green: 0.6096194386, blue: 0, alpha: 1)
             self.notSureBtn.setTitleColor(#colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0), for: .normal)
             self.notSureBtn.titleLabel?.font = UIFont.systemFont(ofSize: Button.bigFrontSize)
         })

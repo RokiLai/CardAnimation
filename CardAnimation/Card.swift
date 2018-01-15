@@ -25,6 +25,7 @@ class Card: UIView{
         backgroundColor = Card.viewColor
         layer.borderWidth = Card.borderWidth
         layer.borderColor = Card.borderColor
+        clipsToBounds = true
     }
     
     required init?(coder aDecoder: NSCoder) {
